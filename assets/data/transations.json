@@ -1,0 +1,98 @@
+[
+    {
+        "date": "2024-12-30",
+        "userId": 1,
+        "userType": "private",
+        "operationType": "withdraw",
+        "amount": "800.00",
+        "currency": "EUR"
+    },
+    {
+        "date": "2024-12-31",
+        "userId": 1,
+        "userType": "private",
+        "operationType": "deposit",
+        "amount": "200.00",
+        "currency": "EUR"
+    },
+    {
+        "date": "2025-01-02",
+        "userId": 1,
+        "userType": "private",
+        "operationType": "withdraw",
+        "amount": "50000",
+        "currency": "JPY"
+    },
+    {
+        "date": "2025-01-03",
+        "userId": 2,
+        "userType": "private",
+        "operationType": "withdraw",
+        "amount": "1000.00",
+        "currency": "USD"
+    },
+    {
+        "date": "2025-01-04",
+        "userId": 2,
+        "userType": "private",
+        "operationType": "withdraw",
+        "amount": "200.00",
+        "currency": "EUR"
+    },
+    {
+        "date": "2025-01-04",
+        "userId": 3,
+        "userType": "business",
+        "operationType": "withdraw",
+        "amount": "300.00",
+        "currency": "EUR"
+    },
+    {
+        "date": "2025-01-05",
+        "userId": 1,
+        "userType": "private",
+        "operationType": "withdraw",
+        "amount": "100.00",
+        "currency": "USD"
+    },
+    {
+        "date": "2025-01-05",
+        "userId": 1,
+        "userType": "private",
+        "operationType": "withdraw",
+        "amount": "100.00",
+        "currency": "EUR"
+    },
+    {
+        "date": "2025-01-06",
+        "userId": 1,
+        "userType": "private",
+        "operationType": "withdraw",
+        "amount": "500.00",
+        "currency": "AZN"
+    },
+    {
+        "date": "2025-01-07",
+        "userId": 2,
+        "userType": "private",
+        "operationType": "withdraw",
+        "amount": "300.00",
+        "currency": "USD"
+    },
+    {
+        "date": "2025-01-08",
+        "userId": 1,
+        "userType": "private",
+        "operationType": "deposit",
+        "amount": "1.00",
+        "currency": "EUR"
+    },
+    {
+        "date": "2025-01-08",
+        "userId": 3,
+        "userType": "business",
+        "operationType": "deposit",
+        "amount": "10000",
+        "currency": "JPY"
+    }
+]
