@@ -1,94 +1,74 @@
-import 'package:commission_calculator/core/constants/app_commissions.dart';
-import 'package:commission_calculator/core/enums/commission_explanation_type.dart';
+import 'package:commission_calculator/core/enums/commission_explanation.dart';
 import 'package:commission_calculator/core/enums/operation_type.dart';
 import 'package:commission_calculator/core/enums/user_type.dart';
 import 'package:commission_calculator/features/commission/domain/entities/commission_result.dart';
 import 'package:commission_calculator/features/commission/domain/entities/exchange_rate.dart';
 import 'package:commission_calculator/features/commission/domain/entities/transaction.dart';
+import 'package:commission_calculator/features/commission/domain/rules/commission_config.dart';
 import 'package:commission_calculator/features/commission/domain/rules/commission_rule.dart';
 import 'package:decimal/decimal.dart';
 
 class PrivateWithdrawRule extends CommissionRule {
-  PrivateWithdrawRule()
-    : super(Decimal.parse(AppCommissions.privateWithdrawRate)); // 0.3%
+  PrivateWithdrawRule(CommissionConfig config)
+    : _weeklyAllowanceEur = config.weeklyFreeAllowanceEur,
+      _weeklyFreeWithdrawals = config.weeklyFreeWithdrawals,
+      super(config.privateWithdrawRate);
 
-  static final _weeklyFreeAllowanceEur = Decimal.fromInt(1000);
-  static const _weeklyFreeWithdrawals = 3;
+  final Decimal _weeklyAllowanceEur;
+  final int _weeklyFreeWithdrawals;
 
   @override
   CommissionResult calculate(
     Transaction transaction,
-    ExchangeRate rate,
+    ExchangeRate exchangeRate,
     List<CommissionResult> history,
   ) {
     final sameWeek = history
-        .where((previous) => _isSameWeekPrivateWithdraw(previous, transaction))
+        .where((previous) => _isSameWeek(previous.transaction, transaction))
         .toList();
 
     if (sameWeek.length >= _weeklyFreeWithdrawals) {
-      return _chargeFullAmount(
+      return buildResult(
         transaction,
-        rate,
-        CommissionExplanation.privateWithdrawFreeCountExceeded,
+        exchangeRate,
+        explanation: CommissionExplanation.privateWithdrawFreeCountExceeded,
       );
     }
 
     final usedEur = sameWeek.fold(
       Decimal.zero,
-      (sum, previous) => sum + previous.freeAllowanceUsedEur,
+      (sum, previous) => sum + previous.freeAmountInEur,
     );
-    final remainingEur = _weeklyFreeAllowanceEur - usedEur;
+    final remainingEur = _weeklyAllowanceEur - usedEur;
 
     if (remainingEur <= Decimal.zero) {
-      return _chargeFullAmount(
-        transaction,
-        rate,
-        CommissionExplanation.privateWithdrawAllowanceExhausted,
-      );
-    }
-
-    final remainingInTxCurrency = remainingEur * rate.rateToEur;
-
-    if (transaction.amount <= remainingInTxCurrency) {
       return buildResult(
         transaction,
-        rate,
-        chargedAmount: Decimal.zero,
-        freeAllowanceUsedEur: toEur(transaction.amount, rate),
-        explanation: CommissionExplanation.privateWithdrawFree,
+        exchangeRate,
+        explanation: CommissionExplanation.privateWithdrawAllowanceExhausted,
       );
     }
+
+    final fitsAllowance =
+        exchangeRate.toEur(transaction.amount) <= remainingEur;
 
     return buildResult(
       transaction,
-      rate,
-      chargedAmount: transaction.amount - remainingInTxCurrency,
-      freeAllowanceUsedEur: remainingEur,
-      explanation: CommissionExplanation.privateWithdrawAllowanceExceeded,
+      exchangeRate,
+      freeAmount: fitsAllowance
+          ? transaction.amount
+          : exchangeRate.fromEur(remainingEur),
+      explanation: fitsAllowance
+          ? CommissionExplanation.privateWithdrawFree
+          : CommissionExplanation.privateWithdrawAllowanceExceeded,
     );
   }
 
-  CommissionResult _chargeFullAmount(
-    Transaction transaction,
-    ExchangeRate rate,
-    CommissionExplanation explanation,
-  ) => buildResult(
-    transaction,
-    rate,
-    chargedAmount: transaction.amount,
-    explanation: explanation,
-  );
-
-  bool _isSameWeekPrivateWithdraw(
-    CommissionResult previous,
-    Transaction current,
-  ) {
-    final transaction = previous.transaction;
-    return transaction.userId == current.userId &&
-        transaction.userType == UserType.private &&
-        transaction.operationType == OperationType.withdraw &&
-        _mondayOf(transaction.date) == _mondayOf(current.date);
-  }
+  bool _isSameWeek(Transaction previous, Transaction current) =>
+      previous.userId == current.userId &&
+      previous.userType == UserType.private &&
+      previous.operationType == OperationType.withdraw &&
+      _mondayOf(previous.date) == _mondayOf(current.date);
 
   DateTime _mondayOf(DateTime date) => DateTime.utc(
     date.year,
