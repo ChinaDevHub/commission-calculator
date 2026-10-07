@@ -1,23 +1,21 @@
-import 'package:commission_calculator/core/constants/app_commissions.dart';
-import 'package:commission_calculator/core/enums/commission_explanation_type.dart';
 import 'package:commission_calculator/features/commission/domain/entities/commission_result.dart';
 import 'package:commission_calculator/features/commission/domain/entities/exchange_rate.dart';
 import 'package:commission_calculator/features/commission/domain/entities/transaction.dart';
+import 'package:commission_calculator/core/enums/commission_explanation.dart';
+import 'package:commission_calculator/features/commission/domain/rules/commission_config.dart';
 import 'package:commission_calculator/features/commission/domain/rules/commission_rule.dart';
-import 'package:decimal/decimal.dart';
 
 class DepositRule extends CommissionRule {
-  DepositRule() : super(Decimal.parse(AppCommissions.depositRate)); // 0.03%
+  DepositRule(CommissionConfig config) : super(config.depositRate);
 
   @override
   CommissionResult calculate(
     Transaction transaction,
-    ExchangeRate rate,
+    ExchangeRate exchangeRate,
     List<CommissionResult> history,
   ) => buildResult(
     transaction,
-    rate,
-    chargedAmount: transaction.amount,
+    exchangeRate,
     explanation: CommissionExplanation.deposit,
   );
 }

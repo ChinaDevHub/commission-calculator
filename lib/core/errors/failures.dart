@@ -1,3 +1,4 @@
+import 'package:commission_calculator/core/errors/error_messages.dart';
 import 'package:equatable/equatable.dart';
 
 sealed class Failure extends Equatable {
@@ -9,12 +10,8 @@ sealed class Failure extends Equatable {
   List<Object> get props => [message];
 }
 
-final class ServerFailure extends Failure {
-  const ServerFailure([super.message = 'Server error']);
-}
-
-final class CacheFailure extends Failure {
-  const CacheFailure([super.message = 'Cache error']);
+final class DataLoadFailure extends Failure {
+  const DataLoadFailure(super.message);
 }
 
 final class InvalidInputFailure extends Failure {
@@ -22,8 +19,8 @@ final class InvalidInputFailure extends Failure {
 }
 
 final class UnsupportedCurrencyFailure extends Failure {
-  const UnsupportedCurrencyFailure(this.currency)
-    : super('Unsupported currency: $currency');
+  UnsupportedCurrencyFailure(this.currency, {required int index})
+    : super(transactionErrorMessage(index, 'unsupported currency "$currency"'));
 
   final String currency;
 }
