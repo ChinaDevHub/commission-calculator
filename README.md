@@ -95,9 +95,3 @@ lib/
 - Only private withdrawals of the same user use the weekly allowance; deposits and business withdrawals never do.
 - Validation stops at the first invalid transaction and names its position (`Transaction #N: …`).
 - The sample input is bundled at `assets/data/transactions.json` (assets are grouped by type).
-
----
-
-## 🤖 AI Usage
-
-Claude (Anthropic) was used as a pair-programming assistant to review and refactor the data and domain layers.
