@@ -6,8 +6,18 @@ A Flutter app that loads a list of financial transactions, calculates the commis
 | :---: | :---: | :---: | :---: |
 | <img src="docs/screenshots/list-dark.png" width="200"> | <img src="docs/screenshots/details-dark.png" width="200"> | <img src="docs/screenshots/list-light.png" width="200"> | <img src="docs/screenshots/details-light.png" width="200"> |
 
-**Demo recordings:** [iOS (28 s)](docs/media/ios-demo.mp4) · [Android (27 s)](docs/media/android-demo.mp4)
-**Release APK:** attached to the [GitHub release](../../releases) (`app-release.apk`).
+
+## 📱 Demo Recordings
+
+You can view the application demo recordings or download the test APK below:
+
+- **iOS Demo Recording (28s):** [iOS (28 s)](docs/media/ios-demo.mp4)
+- **Android Demo Recording (27s):** [Android (27 s)](docs/media/android-demo.mp4)
+
+> **💡 Note for Reviewers:**  
+> When clicking the demo links, GitHub may display a **"View Raw"** button/page.  
+> Simply click **"View Raw"** (or use the download option) to directly watch or download the `.mp4` video recordings.
+
 
 ---
 
@@ -56,17 +66,6 @@ flutter analyze
 
 81 tests, `flutter analyze` reports no issues. The most relevant ones:
 
-| Test | What it proves |
-| --- | --- |
-| `test/features/commission/sample_input_test.dart` | Runs the bundled JSON through the real DI graph and asserts all 12 expected commissions and the per-currency totals. |
-| `test/features/commission/domain/rules/commission_calculator_test.dart` | The 12 sample results plus edge cases: week across New Year, 4th withdrawal with allowance left, charging only the excess, rounding up, per-user allowance, one allowance shared across currencies, injected config. |
-| `test/features/commission/data/…` | Parsing and validation of malformed JSON, missing fields, invalid dates, non-string amounts. |
-| `test/features/commission/presentation/cubits/transactions_cubit_test.dart` | Loading → success / empty / error, no emit after close. |
-| `test/features/commission/presentation/pages/transactions_page_test.dart` | Widget tests: the list shows commissions, tapping a row opens the breakdown, invalid input shows the error and retry works. |
-| `test/core/theme/…` | Theme cubit (system / light / dark, persistence) and the toggle switching the whole app. |
-| `test/architecture/domain_purity_test.dart` | The domain imports nothing from Flutter, data or presentation. |
-
----
 
 ## 🏛 Architecture
 
