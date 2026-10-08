@@ -11,6 +11,7 @@ class CommissionResult extends Equatable {
     required this.feeRate,
     required this.freeAmount,
     required this.explanation,
+    this.allowanceLeftEur,
   });
 
   final Transaction transaction;
@@ -18,6 +19,10 @@ class CommissionResult extends Equatable {
   final Decimal feeRate;
   final Decimal freeAmount;
   final CommissionExplanation explanation;
+
+  /// Weekly free allowance left after this transaction, or null when the rule
+  /// has no weekly allowance.
+  final Decimal? allowanceLeftEur;
 
   String get currency => exchangeRate.currency;
 
@@ -32,11 +37,12 @@ class CommissionResult extends Equatable {
   Decimal get commission => exchangeRate.roundUp(rawCommission);
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
     transaction,
     exchangeRate,
     feeRate,
     freeAmount,
     explanation,
+    allowanceLeftEur,
   ];
 }

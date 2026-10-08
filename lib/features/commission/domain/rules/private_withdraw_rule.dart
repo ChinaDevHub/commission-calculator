@@ -27,30 +27,32 @@ class PrivateWithdrawRule extends CommissionRule {
         .where((previous) => _isSameWeek(previous.transaction, transaction))
         .toList();
 
-    if (sameWeek.length >= _weeklyFreeWithdrawals) {
-      return buildResult(
-        transaction,
-        exchangeRate,
-        explanation: CommissionExplanation.privateWithdrawFreeCountExceeded,
-      );
-    }
-
     final usedEur = sameWeek.fold(
       Decimal.zero,
       (sum, previous) => sum + previous.freeAmountInEur,
     );
     final remainingEur = _weeklyAllowanceEur - usedEur;
 
+    if (sameWeek.length >= _weeklyFreeWithdrawals) {
+      return buildResult(
+        transaction,
+        exchangeRate,
+        allowanceLeftEur: remainingEur,
+        explanation: CommissionExplanation.privateWithdrawFreeCountExceeded,
+      );
+    }
+
     if (remainingEur <= Decimal.zero) {
       return buildResult(
         transaction,
         exchangeRate,
+        allowanceLeftEur: Decimal.zero,
         explanation: CommissionExplanation.privateWithdrawAllowanceExhausted,
       );
     }
 
-    final fitsAllowance =
-        exchangeRate.toEur(transaction.amount) <= remainingEur;
+    final amountInEur = exchangeRate.toEur(transaction.amount);
+    final fitsAllowance = amountInEur <= remainingEur;
 
     return buildResult(
       transaction,
@@ -58,6 +60,9 @@ class PrivateWithdrawRule extends CommissionRule {
       freeAmount: fitsAllowance
           ? transaction.amount
           : exchangeRate.fromEur(remainingEur),
+      allowanceLeftEur: fitsAllowance
+          ? remainingEur - amountInEur
+          : Decimal.zero,
       explanation: fitsAllowance
           ? CommissionExplanation.privateWithdrawFree
           : CommissionExplanation.privateWithdrawAllowanceExceeded,
