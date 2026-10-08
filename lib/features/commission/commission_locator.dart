@@ -12,6 +12,7 @@ import 'package:commission_calculator/features/commission/domain/rules/commissio
 import 'package:commission_calculator/features/commission/domain/rules/transaction_validator.dart';
 import 'package:commission_calculator/features/commission/domain/usecases/calculate_commission_totals_usecase.dart';
 import 'package:commission_calculator/features/commission/domain/usecases/calculate_commissions_usecase.dart';
+import 'package:commission_calculator/features/commission/presentation/cubits/transactions_cubit.dart';
 
 void setupCommissionLocator() {
   // ── Data ─────────────────────────────────────────────────────────────────
@@ -49,4 +50,10 @@ void setupCommissionLocator() {
   locator.registerLazySingleton(CalculateCommissionTotalsUseCase.new);
 
   // ── Cubits ───────────────────────────────────────────────────────────────
+  locator.registerFactory(
+    () => TransactionsCubit(
+      locator<CalculateCommissionsUseCase>(),
+      locator<CalculateCommissionTotalsUseCase>(),
+    ),
+  );
 }

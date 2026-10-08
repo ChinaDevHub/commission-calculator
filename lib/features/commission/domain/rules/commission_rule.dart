@@ -20,11 +20,13 @@ abstract class CommissionRule {
     ExchangeRate exchangeRate, {
     required CommissionExplanation explanation,
     Decimal? freeAmount,
+    Decimal? allowanceLeftEur,
   }) => CommissionResult(
     transaction: transaction,
     exchangeRate: exchangeRate,
     feeRate: feeRate,
     freeAmount: freeAmount ?? Decimal.zero,
     explanation: explanation,
+    allowanceLeftEur: allowanceLeftEur,
   );
 }

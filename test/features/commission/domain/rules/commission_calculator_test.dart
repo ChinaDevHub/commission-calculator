@@ -28,11 +28,13 @@ void main() {
   });
 
   test('result explains every step of the calculation', () {
-    final [_, result] = calculate([
+    final [first, result] = calculate([
       tx('2024-12-30', '800.00'),
       tx('2025-01-02', '50000', currency: 'JPY'),
     ]);
 
+    expect(first.allowanceLeftEur, d('200'));
+    expect(result.allowanceLeftEur, d('0'));
     expect(result.amountInEur.round(scale: 2), d('307.88'));
     expect(result.freeAmountInEur, d('200'));
     expect(result.freeAmount, d('32480'));
@@ -64,9 +66,23 @@ void main() {
       ]);
 
       expect(commissionsOf(results).last, (d('0.30'), 'EUR'));
+      expect(results.last.allowanceLeftEur, d('700'));
       expect(
         results.last.explanation,
         CommissionExplanation.privateWithdrawFreeCountExceeded,
+      );
+    });
+
+    test('only private withdrawals report the weekly allowance left', () {
+      final results = calculate([
+        tx('2025-01-06', '100.00', operationType: OperationType.deposit),
+        tx('2025-01-06', '100.00', userType: UserType.business),
+        tx('2025-01-06', '100.00'),
+      ]);
+
+      expect(
+        [for (final result in results) result.allowanceLeftEur],
+        [null, null, d('900')],
       );
     });
 
